@@ -1,10 +1,22 @@
 {
   "manifest_version": 3,
-  "name": "BobRossRocks",
+  "name": "AIDictionary",
   "version": "1.0.0",
+  "description": "Select any word on a webpage to get its definition from Google Gemini AI",
+  "permissions": ["storage"],
+  "host_permissions": [
+    "https://generativelanguage.googleapis.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "AI Dictionary Settings"
+  },
   "content_scripts": [
     {
-      "matches": ["https://www.youtube.com/*"],
+      "matches": ["<all_urls>"],
       "js": ["Content.js"]
     }
   ]
