@@ -82,10 +82,51 @@
       a:hover {
         text-decoration: underline;
       }
+      .toggle-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 15px;
+        padding: 10px;
+        background-color: white;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+      }
+      .toggle-switch {
+        width: 50px;
+        height: 26px;
+        background-color: #ccc;
+        border-radius: 13px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        position: relative;
+      }
+      .toggle-switch.active {
+        background-color: #4caf50;
+      }
+      .toggle-switch::after {
+        content: "";
+        position: absolute;
+        width: 22px;
+        height: 22px;
+        background-color: white;
+        border-radius: 50%;
+        top: 2px;
+        left: 2px;
+        transition: left 0.3s;
+      }
+      .toggle-switch.active::after {
+        left: 26px;
+      }
     </style>
   </head>
   <body>
     <h2>AI Dictionary Settings</h2>
+
+    <div class="toggle-container">
+      <label style="margin: 0; font-weight: bold">Extension Status:</label>
+      <div id="extensionToggle" class="toggle-switch active"></div>
+    </div>
 
     <div class="info">
       <strong>How to get API Key:</strong><br />

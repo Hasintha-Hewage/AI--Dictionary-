@@ -3,10 +3,11 @@ document.addEventListener('DOMContentLoaded', function() {
   const modelSelect = document.getElementById('modelSelect');
   const saveBtn = document.getElementById('saveBtn');
   const toggleBtn = document.getElementById('toggleBtn');
+  const extensionToggle = document.getElementById('extensionToggle');
   const messageDiv = document.getElementById('message');
 
-  // Load existing API key and model
-  chrome.storage.local.get(['geminiApiKey', 'selectedModel'], function(data) {
+  // Load existing API key, model, and extension status
+  chrome.storage.local.get(['geminiApiKey', 'selectedModel', 'extensionEnabled'], function(data) {
     if (data.geminiApiKey) {
       apiKeyInput.value = data.geminiApiKey;
     }
@@ -16,6 +17,27 @@ document.addEventListener('DOMContentLoaded', function() {
       // Set default to Gemini 2.5 Flash for better free tier compatibility
       modelSelect.value = 'gemini-2.5-flash';
     }
+    
+    // Set extension status toggle
+    const enabled = data.extensionEnabled !== false; // Default to enabled
+    if (enabled) {
+      extensionToggle.classList.add('active');
+    } else {
+      extensionToggle.classList.remove('active');
+    }
+  });
+
+  // Handle extension toggle
+  extensionToggle.addEventListener('click', function() {
+    extensionToggle.classList.toggle('active');
+    const isEnabled = extensionToggle.classList.contains('active');
+    chrome.storage.local.set({ extensionEnabled: isEnabled }, function() {
+      const status = isEnabled ? 'ENABLED' : 'DISABLED';
+      showMessage('✓ Extension ' + status, 'success');
+      setTimeout(() => {
+        messageDiv.textContent = '';
+      }, 2000);
+    });
   });
 
   // Save API key and model
