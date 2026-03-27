@@ -2,6 +2,7 @@
   let selectedText = '';
   let currentPopup = null;
   let selectionStart = { x: 0, y: 0 };
+  let lastMousePos = { x: 0, y: 0 };
 
   function createLoadingPopup(x, y) {
     if (currentPopup) {
@@ -193,45 +194,125 @@
     });
   }
 
+  // Extract word at a specific position (x, y)
+  function getWordAtPosition(x, y) {
+    const element = document.elementFromPoint(x, y);
+    if (!element || element.nodeType === Node.ELEMENT_NODE) {
+      // Try to get from text nodes
+      const range = document.caretRangeFromPoint(x, y);
+      if (!range || !range.startContainer) return null;
+
+      const node = range.startContainer;
+      if (node.nodeType !== Node.TEXT_NODE) return null;
+
+      const text = node.textContent;
+      const offset = range.startOffset;
+
+      if (!text || offset < 0 || offset > text.length) return null;
+
+      // Find word boundaries
+      let start = offset;
+      let end = offset;
+
+      // Move start backwards to find word start
+      while (start > 0 && /\w/.test(text[start - 1])) {
+        start--;
+      }
+
+      // Move end forwards to find word end
+      while (end < text.length && /\w/.test(text[end])) {
+        end++;
+      }
+
+      const word = text.slice(start, end).trim();
+      return word.length > 0 ? word : null;
+    }
+    return null;
+  }
+
+  // Track mouse movement to get cursor position
+  document.addEventListener('mousemove', function(event) {
+    lastMousePos = { x: event.clientX, y: event.clientY };
+  });
+
   document.addEventListener('mouseup', function(event) {
     const selection = window.getSelection().toString().trim();
     if (selection.length > 0) {
       selectedText = selection;
       selectionStart = { x: event.clientX, y: event.clientY };
+      
+      // Auto-show popup for selected text (sentence mode)
+      checkExtensionEnabled().then(enabled => {
+        if (!enabled) return;
+        
+        showDefinition(selectedText, selectionStart);
+      });
     }
   });
 
-  document.addEventListener('keydown', function(event) {
-    // Check if Q or q key is pressed
-    if ((event.key === 'q' || event.key === 'Q') && selectedText.length > 0) {
-      event.preventDefault();
+  // Handle click events for word mode and popup toggle
+  document.addEventListener('click', function(event) {
+    checkExtensionEnabled().then(enabled => {
+      if (!enabled) return;
 
-      checkExtensionEnabled().then(enabled => {
-        // If extension is disabled, do nothing silently
-        if (!enabled) {
+      // If popup exists and click is outside it, hide the popup (toggle off)
+      if (currentPopup && currentPopup.parentElement) {
+        const popupRect = currentPopup.getBoundingClientRect();
+        const clickX = event.clientX;
+        const clickY = event.clientY;
+
+        // Check if click is outside popup bounds
+        if (clickX < popupRect.left || clickX > popupRect.right || 
+            clickY < popupRect.top || clickY > popupRect.bottom) {
+          closePopup();
+          selectedText = '';
           return;
         }
+      }
 
-        // Show loading popup only if enabled
-        createLoadingPopup(selectionStart.x + 10, selectionStart.y + 20);
+      // If popup is already visible, don't trigger new definition
+      if (currentPopup && currentPopup.parentElement) {
+        return;
+      }
 
-        // Request definition from background script
-        chrome.runtime.sendMessage(
-          { action: 'getDefinition', text: selectedText },
-          function(response) {
-            if (response && response.meaning) {
-              createDefinitionPopup(selectedText, response.meaning, selectionStart.x + 10, selectionStart.y + 20);
-            } else if (response && response.error) {
-              createDefinitionPopup(selectedText, '❌ Error: ' + response.error, selectionStart.x + 10, selectionStart.y + 20);
-            } else {
-              createDefinitionPopup(selectedText, '❌ No response received', selectionStart.x + 10, selectionStart.y + 20);
-            }
-          }
-        );
-      });
-    }
+      // Get selected text (sentence mode)
+      const selection = window.getSelection().toString().trim();
+      if (selection.length > 0) {
+        selectedText = selection;
+        selectionStart = { x: event.clientX, y: event.clientY };
+        showDefinition(selectedText, selectionStart);
+        return;
+      }
 
-    // Close popup with ESC key only if a popup exists
+      // No selection, try word mode (extract word at click position)
+      const wordAtClick = getWordAtPosition(event.clientX, event.clientY);
+      if (wordAtClick) {
+        const clickPos = { x: event.clientX, y: event.clientY };
+        showDefinition(wordAtClick, clickPos);
+      }
+    });
+  });
+
+  // Function to show definition popup
+  function showDefinition(text, pos) {
+    createLoadingPopup(pos.x + 10, pos.y + 20);
+
+    chrome.runtime.sendMessage(
+      { action: 'getDefinition', text: text },
+      function(response) {
+        if (response && response.meaning) {
+          createDefinitionPopup(text, response.meaning, pos.x + 10, pos.y + 20);
+        } else if (response && response.error) {
+          createDefinitionPopup(text, '❌ Error: ' + response.error, pos.x + 10, pos.y + 20);
+        } else {
+          createDefinitionPopup(text, '❌ No response received', pos.x + 10, pos.y + 20);
+        }
+      }
+    );
+  }
+
+  // Close popup with ESC key
+  document.addEventListener('keydown', function(event) {
     if (event.key === 'Escape' && currentPopup) {
       closePopup();
       selectedText = '';

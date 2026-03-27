@@ -2,10 +2,16 @@
   "manifest_version": 3,
   "name": "AIDictionary",
   "version": "1.0.0",
-  "description": "Select any word on a webpage to get its definition from Google Gemini AI",
-  "permissions": ["storage"],
+  "description": "Select any word on any webpage or PDF to get its definition from Google Gemini AI",
+  "permissions": [
+    "storage",
+    "webRequest"
+  ],
   "host_permissions": [
-    "https://generativelanguage.googleapis.com/*"
+    "https://generativelanguage.googleapis.com/*",
+    "http://*/*",
+    "https://*/*",
+    "file:///*"
   ],
   "background": {
     "service_worker": "background.js"
@@ -16,8 +22,14 @@
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
-      "js": ["Content.js"]
+      "matches": [
+        "http://*/*",
+        "https://*/*",
+        "file:///*"
+      ],
+      "js": ["Content.js"],
+      "all_frames": true,
+      "run_at": "document_end"
     }
   ]
 }
