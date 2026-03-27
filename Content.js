@@ -207,12 +207,12 @@
       event.preventDefault();
 
       checkExtensionEnabled().then(enabled => {
+        // If extension is disabled, do nothing silently
         if (!enabled) {
-          createDefinitionPopup(selectedText, '❌ Extension is disabled. Enable it in settings.', selectionStart.x + 10, selectionStart.y + 20);
           return;
         }
 
-        // Show loading popup
+        // Show loading popup only if enabled
         createLoadingPopup(selectionStart.x + 10, selectionStart.y + 20);
 
         // Request definition from background script
@@ -231,8 +231,8 @@
       });
     }
 
-    // Close popup with ESC key
-    if (event.key === 'Escape') {
+    // Close popup with ESC key only if a popup exists
+    if (event.key === 'Escape' && currentPopup) {
       closePopup();
       selectedText = '';
     }

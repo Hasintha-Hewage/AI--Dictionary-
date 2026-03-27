@@ -2,183 +2,272 @@
 <html>
   <head>
     <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
       body {
-        width: 400px;
-        padding: 15px;
-        font-family: Arial, sans-serif;
-        background-color: #f5f5f5;
+        width: 420px;
+        padding: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
       }
+
+      .container {
+        padding: 20px;
+      }
+
       h2 {
-        color: #333;
-        margin-top: 0;
+        color: white;
+        margin-bottom: 20px;
+        font-size: 24px;
+        font-weight: 600;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
       }
+
       .input-group {
-        margin-bottom: 15px;
+        margin-bottom: 16px;
       }
+
       label {
         display: block;
-        margin-bottom: 5px;
-        font-weight: bold;
-        color: #333;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.95);
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
       }
+
       input[type="password"],
-      input[type="text"] {
+      input[type="text"],
+      select {
         width: 100%;
-        padding: 8px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
+        padding: 12px 14px;
+        border: none;
+        border-radius: 8px;
         box-sizing: border-box;
         font-size: 14px;
+        background-color: rgba(255, 255, 255, 0.95);
+        color: #333;
+        transition: all 0.3s ease;
       }
+
       input[type="password"]:focus,
-      input[type="text"]:focus {
+      input[type="text"]:focus,
+      select:focus {
         outline: none;
-        border-color: #4caf50;
-        box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+        background-color: white;
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
       }
+
       button {
-        background-color: #4caf50;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
-        padding: 10px 20px;
+        padding: 12px 20px;
         border: none;
-        border-radius: 4px;
+        border-radius: 8px;
         cursor: pointer;
         font-size: 14px;
         width: 100%;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
       }
+
       button:hover {
-        background-color: #45a049;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
       }
+
+      button:active {
+        transform: translateY(0);
+      }
+
+      #saveBtn {
+        margin-bottom: 10px;
+      }
+
+      #toggleBtn {
+        background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+        box-shadow: 0 4px 15px rgba(33, 150, 243, 0.4);
+      }
+
+      #toggleBtn:hover {
+        box-shadow: 0 6px 20px rgba(33, 150, 243, 0.6);
+      }
+
       .message {
-        margin-top: 10px;
-        padding: 10px;
-        border-radius: 4px;
+        margin-top: 12px;
+        padding: 12px;
+        border-radius: 8px;
         text-align: center;
         font-size: 14px;
+        font-weight: 600;
+        animation: slideIn 0.3s ease;
       }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
       .success {
-        background-color: #d4edda;
+        background-color: rgba(212, 237, 218, 0.95);
         color: #155724;
         border: 1px solid #c3e6cb;
       }
+
       .error {
-        background-color: #f8d7da;
+        background-color: rgba(248, 215, 218, 0.95);
         color: #721c24;
         border: 1px solid #f5c6cb;
       }
+
       .info {
-        background-color: #d1ecf1;
-        color: #0c5460;
-        border: 1px solid #bee5eb;
-        margin-bottom: 15px;
-        padding: 10px;
-        border-radius: 4px;
+        background-color: rgba(255, 255, 255, 0.15);
+        color: rgba(255, 255, 255, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        margin-bottom: 16px;
+        padding: 12px;
+        border-radius: 8px;
         font-size: 13px;
+        backdrop-filter: blur(10px);
       }
+
+      .info strong {
+        display: block;
+        margin-bottom: 8px;
+        color: white;
+      }
+
       a {
-        color: #0c5460;
+        color: rgba(255, 255, 255, 0.9);
         text-decoration: none;
+        font-weight: 600;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+        transition: all 0.3s ease;
       }
+
       a:hover {
-        text-decoration: underline;
+        border-bottom-color: rgba(255, 255, 255, 0.8);
       }
+
       .toggle-container {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 15px;
-        padding: 10px;
-        background-color: white;
-        border-radius: 4px;
-        border: 1px solid #ddd;
+        margin-bottom: 16px;
+        padding: 14px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
       }
+
+      .toggle-container label {
+        margin: 0;
+        color: white;
+        text-transform: none;
+        letter-spacing: normal;
+      }
+
       .toggle-switch {
-        width: 50px;
-        height: 26px;
-        background-color: #ccc;
-        border-radius: 13px;
+        width: 52px;
+        height: 28px;
+        background-color: rgba(255, 255, 255, 0.3);
+        border-radius: 14px;
         cursor: pointer;
-        transition: background-color 0.3s;
+        transition: background-color 0.3s ease;
         position: relative;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
       }
+
       .toggle-switch.active {
         background-color: #4caf50;
+        box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
       }
+
       .toggle-switch::after {
         content: "";
         position: absolute;
-        width: 22px;
-        height: 22px;
+        width: 24px;
+        height: 24px;
         background-color: white;
         border-radius: 50%;
         top: 2px;
         left: 2px;
-        transition: left 0.3s;
+        transition: left 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
       }
+
       .toggle-switch.active::after {
         left: 26px;
       }
     </style>
   </head>
   <body>
-    <h2>AI Dictionary Settings</h2>
+    <div class="container">
+      <h2>⚙️ AI Dictionary</h2>
 
-    <div class="toggle-container">
-      <label style="margin: 0; font-weight: bold">Extension Status:</label>
-      <div id="extensionToggle" class="toggle-switch active"></div>
+      <div class="toggle-container">
+        <label style="margin: 0; font-weight: bold">Extension Status:</label>
+        <div id="extensionToggle" class="toggle-switch active"></div>
+      </div>
+
+      <div class="info">
+        <strong>🔑 How to get API Key:</strong>
+        1. Go to
+        <a href="https://makersuite.google.com/app/apikey" target="_blank"
+          >Google AI Studio</a
+        ><br />
+        2. Create a new API key<br />
+        3. Copy and paste it below
+      </div>
+
+      <div class="input-group">
+        <label for="apiKey">📝 Google Gemini API Key:</label>
+        <input
+          type="password"
+          id="apiKey"
+          placeholder="Enter your Google Gemini API Key"
+        />
+      </div>
+
+      <div class="input-group">
+        <label for="modelSelect">🤖 AI Model:</label>
+        <select id="modelSelect">
+          <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
+          <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
+          <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+          <option value="gemini-2.0-flash-lite">Gemini 2.0 Flash Lite</option>
+          <option value="gemini-3-flash">Gemini 3 Flash</option>
+          <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash Lite</option>
+          <option value="gemini-3.1-pro">Gemini 3.1 Pro</option>
+          <option value="gemini-3.1-flash-lite">Gemini 3.1 Flash Lite</option>
+          <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+          <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+          <option value="gemma-3-1b">Gemma 3 1B</option>
+        </select>
+      </div>
+
+      <button id="saveBtn">💾 Save API Key</button>
+      <button id="toggleBtn">👁️ Show Key</button>
+
+      <div id="message"></div>
     </div>
-
-    <div class="info">
-      <strong>How to get API Key:</strong><br />
-      1. Go to
-      <a href="https://makersuite.google.com/app/apikey" target="_blank"
-        >Google AI Studio</a
-      ><br />
-      2. Create a new API key<br />
-      3. Copy and paste it below
-    </div>
-
-    <div class="input-group">
-      <label for="apiKey">Google Gemini API Key:</label>
-      <input
-        type="password"
-        id="apiKey"
-        placeholder="Enter your Google Gemini API Key"
-      />
-    </div>
-
-    <div class="input-group">
-      <label for="modelSelect">AI Model:</label>
-      <select
-        id="modelSelect"
-        style="
-          width: 100%;
-          padding: 8px;
-          border: 1px solid #ddd;
-          border-radius: 4px;
-          font-size: 14px;
-        "
-      >
-        <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
-        <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
-        <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
-        <option value="gemini-2.0-flash-lite">Gemini 2.0 Flash Lite</option>
-        <option value="gemini-3-flash">Gemini 3 Flash</option>
-        <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash Lite</option>
-        <option value="gemini-3.1-pro">Gemini 3.1 Pro</option>
-        <option value="gemini-3.1-flash-lite">Gemini 3.1 Flash Lite</option>
-        <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
-        <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
-        <option value="gemma-3-1b">Gemma 3 1B</option>
-      </select>
-    </div>
-
-    <button id="saveBtn">Save API Key</button>
-    <button id="toggleBtn" style="margin-top: 8px; background-color: #2196f3">
-      Show Key
-    </button>
-
-    <div id="message"></div>
 
     <script src="popup.js"></script>
   </body>
